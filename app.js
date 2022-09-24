@@ -1,5 +1,7 @@
+//this will import the exported object from generate-site.js allowing us to use generateSite.writeFile() and generateSite.copyFile() ----> const generateSite = require('./utils/generate-site.js'); changing to below
+const { writeFile, copyFile} = require('./utils/generate-site.js;');
 const inquirer = require('inquirer');
-const fs = require('fs');
+//removing this as we're no longer going to use the fs library in this file,const fs = require('fs');
 const generatePage = require('./src/page-template.js');
 
 const promptUser = () => {
@@ -50,7 +52,6 @@ const promptUser = () => {
         }
     ]);
 };
-
 const promptProject = portfolioData => {
 //If there's no 'projects' array property, create one//
 if (!portfolioData.projects) {
@@ -132,16 +133,20 @@ if (!portfolioData.projects) {
 
 //THIS HAS TO GO AFTER ALL THE OTHER STUFF//
 promptUser()
-    .then(promptProject)
-    .then(portfolioData => {
-        const pageHTML = generatePage(portfolioData);
-
-        fs.writeFile('./index.html', pageHTML, err => {
-        });
-    
-            //     if (err) throw err;
-
-            //     console.log('Portfolio complete! Check out index.html to see the output!');
-            // });
-    });
-    
+  .then(promptProject)
+  .then(portfolioData => {
+    return generatePage(portfolioData);
+  })
+  .then(pageHTML => {
+    return writeFile(pageHTML);
+  })
+  .then(writeFileResponse => {
+    console.log(writeFileResponse);
+    return copyFile();
+  })
+  .then(copyFileResponse => {
+    console.log(copyFileResponse);
+  })
+  .catch(err => {
+    console.log(err);
+  });
